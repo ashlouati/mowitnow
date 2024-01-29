@@ -3,7 +3,7 @@ package com.mowit.core;
 public class Mower implements Movable {
     private int x;
     private int y;
-    private char orientation;
+    private Orientation orientation;
     private final int maxX;
     private final int maxY;
 
@@ -19,18 +19,10 @@ public class Mower implements Movable {
         int newY = y;
 
         switch (orientation) {
-            case 'N':
-                newY++;
-                break;
-            case 'E':
-                newX++;
-                break;
-            case 'S':
-                newY--;
-                break;
-            case 'W':
-                newX--;
-                break;
+            case N -> newY++;
+            case E -> newX++;
+            case S -> newY--;
+            case W -> newX--;
         }
 
         if (isValidPosition(newX, newY)) {
@@ -41,45 +33,19 @@ public class Mower implements Movable {
 
     @Override
     public void rotateRight() {
-        switch (orientation) {
-            case 'N':
-                orientation = 'E';
-                break;
-            case 'E':
-                orientation = 'S';
-                break;
-            case 'S':
-                orientation = 'W';
-                break;
-            case 'W':
-                orientation = 'N';
-                break;
-        }
+        orientation = orientation.rotateRight();
     }
 
     @Override
     public void rotateLeft() {
-        switch (orientation) {
-            case 'N':
-                orientation = 'W';
-                break;
-            case 'E':
-                orientation = 'N';
-                break;
-            case 'S':
-                orientation = 'E';
-                break;
-            case 'W':
-                orientation = 'S';
-                break;
-        }
+        orientation = orientation.rotateLeft();
     }
 
     public void deploy(int x, int y, char orientation) {
         if (isValidPosition(x, y)) {
             this.x = x;
             this.y = y;
-            this.orientation = orientation;
+            this.orientation = Orientation.fromChar(orientation);
         } else {
             throw new IllegalArgumentException("Invalid initial position for mower");
         }
@@ -87,18 +53,10 @@ public class Mower implements Movable {
 
     public void move(String instructions) {
         for (char instruction : instructions.toCharArray()) {
-            switch (instruction) {
-                case 'D':
-                    rotateRight();
-                    break;
-                case 'G':
-                    rotateLeft();
-                    break;
-                case 'A':
-                    advance();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid instruction: " + instruction);
+            switch (Command.fromChar(instruction)) {
+                case D -> rotateRight();
+                case G -> rotateLeft();
+                case A -> advance();
             }
         }
     }
