@@ -1,33 +1,30 @@
 package com.mowit.core;
 
 public class Mower implements Movable {
-    private int x;
-    private int y;
+    private Position position;
     private Orientation orientation;
-    private final int maxX;
-    private final int maxY;
+    private final Position maxPosition;
+    private final MowerManager mowerManager;
 
-    public Mower(int maxX, int maxY) {
-        this.maxX = maxX;
-        this.maxY = maxY;
+    public Mower(int maxX, int maxY, MowerManager mowerManager) {
+        this.maxPosition = new Position(maxX, maxY);
+        this.mowerManager = mowerManager;
     }
-
 
     @Override
     public void advance() {
-        int newX = x;
-        int newY = y;
+        int x = position.x();
+        int y = position.y();
 
-        switch (orientation) {
-            case N -> newY++;
-            case E -> newX++;
-            case S -> newY--;
-            case W -> newX--;
-        }
-
-        if (isValidPosition(newX, newY)) {
-            x = newX;
-            y = newY;
+        Position newPosition = switch (orientation) {
+            case N -> new Position(x, y + 1);
+            case E -> new Position(x + 1, y);
+            case S -> new Position(x, y - 1);
+            case W -> new Position(x - 1, y);
+        };
+        if (isValidPosition(newPosition)) {
+            mowerManager.moveMower(this, newPosition);
+            this.position = newPosition;
         }
     }
 
@@ -42,11 +39,12 @@ public class Mower implements Movable {
     }
 
     public void deploy(int x, int y, char orientation) {
-        if (isValidPosition(x, y)) {
-            this.x = x;
-            this.y = y;
+        Position pos = new Position(x, y);
+        if (isValidPosition(pos)) {
+            this.position = pos;
             this.orientation = Orientation.fromChar(orientation);
-        } else {
+        }
+        else {
             throw new IllegalArgumentException("Invalid initial position for mower");
         }
     }
@@ -62,10 +60,18 @@ public class Mower implements Movable {
     }
 
     public String getPosition() {
-        return String.format("%d %d %s", x, y, orientation);
+        return String.format("%d %d %s", position.x(), position.y(), orientation);
     }
 
-    private boolean isValidPosition(int x, int y) {
-        return (x >= 0 && x <= maxX) && (y >= 0 && y <= maxY);
+    public Position getCurrentPosition() {
+        return this.position;
+    }
+
+    private boolean isValidPosition(Position position) {
+        int x = position.x();
+        int y = position.y();
+        int maxX = maxPosition.x();
+        int maxY = maxPosition.y();
+        return (x >= 0 && x <= maxX) && (y >= 0 && y <= maxY) && mowerManager.isPositionAvailable(position);
     }
 }
