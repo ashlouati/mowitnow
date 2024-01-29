@@ -4,12 +4,14 @@ import com.mowit.core.Mower;
 import com.mowit.core.MowerManager;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MowerTest {
 
     @Test
-    public void testMowerSingleMove() {
+    public void testMowerSingleMove() throws IOException {
         MowerManager mowerManager = new MowerManager();
         Mower mower = new Mower(5, 5, mowerManager);
         mower.deploy(1, 2, 'N');
