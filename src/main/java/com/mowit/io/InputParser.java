@@ -1,6 +1,7 @@
 package com.mowit.io;
 
-import com.mowit.core.*;
+import com.mowit.core.Orientation;
+import com.mowit.core.Position;
 import com.mowit.dto.MowerInfo;
 import com.mowit.dto.MowerInput;
 

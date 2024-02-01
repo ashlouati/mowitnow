@@ -3,12 +3,10 @@ package com.mowit.core;
 public class Mower implements Movable {
     private Position position;
     private Orientation orientation;
-    private final Position maxPosition;
-    private final MowerManager mowerManager;
+    private final Lawn lawn;
 
-    public Mower(int maxX, int maxY, MowerManager mowerManager) {
-        this.maxPosition = new Position(maxX, maxY);
-        this.mowerManager = mowerManager;
+    public Mower(Lawn lawn) {
+        this.lawn = lawn;
     }
 
     @Override
@@ -22,8 +20,8 @@ public class Mower implements Movable {
             case S -> new Position(x, y - 1);
             case W -> new Position(x - 1, y);
         };
-        if (isValidPosition(newPosition)) {
-            mowerManager.moveMower(this, newPosition);
+        if (lawn.isValidPosition(newPosition)) {
+            lawn.moveMower(this, newPosition);
             this.position = newPosition;
         }
     }
@@ -40,11 +38,10 @@ public class Mower implements Movable {
 
     public void deploy(int x, int y, char orientation) {
         Position pos = new Position(x, y);
-        if (isValidPosition(pos)) {
+        if (lawn.isValidPosition(pos)) {
             this.position = pos;
             this.orientation = Orientation.fromChar(orientation);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Invalid initial position for mower");
         }
     }
@@ -65,13 +62,5 @@ public class Mower implements Movable {
 
     public Position getCurrentPosition() {
         return this.position;
-    }
-
-    private boolean isValidPosition(Position position) {
-        int x = position.x();
-        int y = position.y();
-        int maxX = maxPosition.x();
-        int maxY = maxPosition.y();
-        return (x >= 0 && x <= maxX) && (y >= 0 && y <= maxY) && mowerManager.isPositionAvailable(position);
     }
 }
